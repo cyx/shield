@@ -6,3 +6,4 @@ ohm-contrib -v0.0.38
 redis -v2.0.10
 sinatra -v1.0
 rack-test -v0.5.6
+nokogiri -v1.4.3.1
