@@ -1,8 +1,14 @@
-require File.expand_path("../lib/shield", File.dirname(__FILE__))
+$:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
+require "shield"
 require "cutest"
-require "sinatra/base"
 require "rack/test"
+require "sinatra/base"
+require "haml"
+require "ohm"
+require "ohm/contrib"
+
+prepare { Ohm.flush }
 
 class Cutest::Scope
   include Rack::Test::Methods

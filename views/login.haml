@@ -1,0 +1,16 @@
+%h1 Login
+
+%form{:action => request.fullpath, :method => "post"}
+  %fieldset
+    %label
+      %span Username:
+      %input{:type => "text", :name => "login", :value => params[:login]}
+
+    %label
+      %span Password:
+      %input{:type => "password", :name => "password"}
+
+  %fieldset.buttons
+    %button(type="submit" title="Login")
+      %span
+        %span Login

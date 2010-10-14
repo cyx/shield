@@ -1,0 +1,8 @@
+# .gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
+haml -v3.0.21
+nest -v0.0.7
+ohm -v0.1.0
+ohm-contrib -v0.0.38
+redis -v2.0.10
+sinatra -v1.0
+rack-test -v0.5.6
