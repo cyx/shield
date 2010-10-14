@@ -28,16 +28,18 @@ class App < Sinatra::Base
   enable :sessions
 
   # Now for the main highlight: This line simply does two things:
+  #
   # 1. It adds `Shield::Helpers` to your Sinatra app's helpers.
   # 2. It adds `Shield::Login` as a middleware for your application.
+  #
   register Shield
 
-  # This is a normal sinatra route. No authentication is needed here.
+  # This is a normal Sinatra route. No authentication is needed here.
   get "/public" do
     "Public"
   end
 
-  # This is a private sinatra route, which we enforce using
+  # This is a private Sinatra route, which we enforce using
   # `ensure_authenticated`. This method comes from `Shield::Helpers` along
   # with some other helper methods:
   #
