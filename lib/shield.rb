@@ -6,25 +6,13 @@ module Shield
   autoload :FlexiUser, "shield/template/flexi_user"
   autoload :Password,  "shield/password"
   autoload :Login,     "shield/login"
+  autoload :Helpers,   "shield/helpers"
 
-  module Helpers
-    def ensure_authenticated
-      return if logged_in?
+  def self.registered(app)
+    app.helpers Helpers
 
-      session[:return_to] = request.fullpath
-      redirect "/login"
-    end
-
-    def logged_in?
-      !! current_user
-    end
-
-    def current_user
-      @_current_user ||= ::User[session[:user]]
-    end
-
-    def redirect_to_stored(default = "/")
-      redirect(session.delete(:return_to) || default)
+    app.use Login do |m|
+      m.settings.set :views, app.views if app.views
     end
   end
 end

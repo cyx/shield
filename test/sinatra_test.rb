@@ -5,8 +5,7 @@ end
 
 class SinatraApp < Sinatra::Base
   enable :sessions
-
-  helpers Shield::Helpers
+  register Shield
 
   get "/public" do
     "Public"
@@ -16,18 +15,6 @@ class SinatraApp < Sinatra::Base
     ensure_authenticated
 
     "Private"
-  end
-
-  post "/login" do
-    user = User.authenticate(params[:login], params[:password])
-
-    if user
-      session[:success] = "Success"
-      redirect_to_stored
-    else
-      session[:error] = "Failure"
-      redirect "/login"
-    end
   end
 end
 
@@ -54,5 +41,33 @@ scope do
 
     post "/login", :login => "quentin@test.com", :password => "password"
     assert_redirected_to "/private"
+  end
+
+  test "GET /login response" do
+    get "/login"
+
+    doc = Nokogiri(%{<div>#{last_response.body}</div>})
+
+    assert 2 == doc.search("form > fieldset > label > input").size
+    assert 1 == doc.search("form > fieldset > button").size
+  end
+end
+
+class LoginCustomized < Sinatra::Base
+  enable :sessions
+  set :views, File.join(File.dirname(__FILE__), "fixtures", "views")
+
+  register Shield
+end
+
+scope do
+  def app
+    LoginCustomized.new
+  end
+
+  test "login response" do
+    get "/login"
+
+    assert "<h1>Login</h1>" == last_response.body.strip
   end
 end
