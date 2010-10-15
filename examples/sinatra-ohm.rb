@@ -96,7 +96,7 @@ class App < Sinatra::Base
   enable :sessions
 
   # We'll also enable `:inline_templates` for this example to make this a
-  # one-file ruby application. (See the __END__ at the end).
+  # one-file ruby application. (See the `__END__` at the end).
   enable :inline_templates
 
   # Nothing to see here except that we provide a link to `/login`.
@@ -112,7 +112,7 @@ class App < Sinatra::Base
     "And we're in! <a href='/logout'>Logout</a>"
   end
 
-  # Our dead-simple login form. Check the @@login section below to see
+  # Our dead-simple login form. Check the `@@login` section below to see
   # the actual `haml` file.
   get "/login" do
     haml :login
