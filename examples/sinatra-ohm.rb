@@ -63,8 +63,8 @@ class User < Ohm::Model
 
   # The `fetch` protocol is actually really simple to implement. Here we just
   # find the first user by `email`.
-  def self.fetch(username)
-    find(:email => username).first
+  def self.fetch(email)
+    find(:email => email).first
   end
 
   # This isn't required in any way by `Shield` but this is the most simple and
