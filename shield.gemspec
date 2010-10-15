@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "shield"
-  s.version = "0.0.1"
+  s.version = "0.0.0"
   s.summary = %{Ohm specific authentication solution.}
   s.description = %Q{
     Gets you 80-90% of the way regarding your authentication
