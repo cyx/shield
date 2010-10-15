@@ -85,10 +85,10 @@ class App < Sinatra::Base
   # assumptions:
   #
   # 1. A `redirect` method exists.
-  # 2. A `request` method (which maps to Rack::Request) exists.
+  # 2. A `request` method (which maps to `Rack::Request`) exists.
   # 3. A `session` method exists.
-  # 4. A `User` class exists, with a `User::[]` method that finds any user by
-  #    its ID.
+  # 4. Your model class, e.g. `User` has a `[]` method (i.e. `User::[]`)
+  #    that finds any user by its ID.
   helpers Shield::Helpers
 
   # Like any web application that maintains some kind of state, we'll need
@@ -107,7 +107,7 @@ class App < Sinatra::Base
   # The dashboard is protected via the `ensure_authenticated` method.
   # We also add a `logout` link.
   get "/dashboard" do
-    ensure_authenticated
+    ensure_authenticated(User)
 
     "And we're in! <a href='/logout'>Logout</a>"
   end
@@ -121,7 +121,7 @@ class App < Sinatra::Base
   # The crux of the login process appears here. We make use of the
   # `login` method provided by `Shield::Helpers`.
   post "/login" do
-    if login(params[:username], params[:password])
+    if login(User, params[:username], params[:password])
       redirect "/dashboard"
     else
       @error = "Wrong Username and/or Password combination."
@@ -132,7 +132,7 @@ class App < Sinatra::Base
   # Finally, a simple logout route which uses `logout` provided by
   # `Shield::Helpers`.
   get "/logout" do
-    logout
+    logout(User)
     redirect "/"
   end
 end

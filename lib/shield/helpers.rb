@@ -1,37 +1,38 @@
 module Shield
   module Helpers
-    def ensure_authenticated
-      return if logged_in?
+    def ensure_authenticated(model)
+      return if authenticated(model)
 
       session[:return_to] = request.fullpath
+      redirect_to_login
+    end
+
+    def authenticated(model)
+      @_authenticated ||= {}
+      @_authenticated[model] ||= model[session[model.to_s]]
+    end
+
+    def redirect_to_login
       redirect "/login"
-    end
-
-    def logged_in?
-      !! current_user
-    end
-
-    def current_user
-      @_current_user ||= User[session[:user]]
     end
 
     def redirect_to_stored(default = "/")
       redirect(session.delete(:return_to) || default)
     end
 
-    def login(username, password)
-      user = User.authenticate(username, password)
+    def login(model, username, password)
+      instance = model.authenticate(username, password)
 
-      if user
-        session[:user] = user.id
+      if instance
+        session[model.to_s] = instance.id
         return true
       else
         return false
       end
     end
 
-    def logout
-      session.delete(:user)
+    def logout(model)
+      session.delete(model.to_s)
       session.delete(:return_to)
     end
   end

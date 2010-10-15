@@ -41,27 +41,36 @@ setup do
 end
 
 test "ensure_authenticated when logged out" do |context|
-  context.ensure_authenticated
+  context.ensure_authenticated(User)
   assert "/events/1" == context.session[:return_to]
   assert "/login" == context.redirect
 end
 
 test "ensure_authenticated when logged in" do |context|
-  context.session[:user] = 1
-  assert nil == context.ensure_authenticated
+  context.session["User"] = 1
+  assert nil == context.ensure_authenticated(User)
+  assert nil == context.redirect
+  assert nil == context.session[:return_to]
 end
 
-test "current_user" do |context|
-  context.session[:user] = 1
-
-  assert User.new(1) == context.current_user
+class Admin < Struct.new(:id)
+  def self.[](id)
+    new(id) unless id.to_s.empty?
+  end
 end
 
-test "caches current_user in @_current_user" do |context|
-  context.session[:user] = 1
-  context.current_user
+test "authenticated" do |context|
+  context.session["User"] = 1
 
-  assert User.new(1) == context.instance_variable_get(:@_current_user)
+  assert User.new(1) == context.authenticated(User)
+  assert nil == context.authenticated(Admin)
+end
+
+test "caches authenticated in @_authenticated" do |context|
+  context.session["User"] = 1
+  context.authenticated(User)
+
+  assert User.new(1) == context.instance_variable_get(:@_authenticated)[User]
 end
 
 test "redirect to stored when :return_to is set" do |context|
@@ -81,21 +90,21 @@ test "redirect to stored when no return to" do |context|
 end
 
 test "login success" do |context|
-  assert context.login("quentin", "password")
-  assert 1001 == context.session[:user]
+  assert context.login(User, "quentin", "password")
+  assert 1001 == context.session["User"]
 end
 
 test "login failure" do |context|
-  assert false == context.login("wrong", "creds")
-  assert nil == context.session[:user]
+  assert false == context.login(User, "wrong", "creds")
+  assert nil == context.session["User"]
 end
 
 test "logout" do |context|
-  context.session[:user] = 1001
+  context.session["User"] = 1001
   context.session[:return_to] = "/foo"
 
-  context.logout
+  context.logout(User)
 
-  assert nil == context.session[:user]
+  assert nil == context.session["User"]
   assert nil == context.session[:return_to]
 end

@@ -21,7 +21,7 @@ class SinatraApp < Sinatra::Base
   end
 
   get "/private" do
-    ensure_authenticated
+    ensure_authenticated(User)
 
     "Private"
   end
@@ -31,15 +31,15 @@ class SinatraApp < Sinatra::Base
   end
 
   post "/login" do
-    if login(params[:login], params[:password])
+    if login(User, params[:login], params[:password])
       redirect_to_stored
     else
-      redirect "/login"
+      redirect_to_login
     end
   end
 
   get "/logout" do
-    logout
+    logout(User)
     redirect "/"
   end
 end
@@ -66,14 +66,14 @@ scope do
     post "/login", :login => "quentin", :password => "password"
     assert_redirected_to "/private"
 
-    assert 1001 == session[:user]
+    assert 1001 == session["User"]
   end
 
   test "failed login" do
     post "/login", :login => "q", :password => "p"
     assert_redirected_to "/login"
 
-    assert nil == session[:user]
+    assert nil == session["User"]
   end
 
   test "logging out" do
@@ -81,7 +81,7 @@ scope do
 
     get "/logout"
 
-    assert nil == session[:user]
+    assert nil == session["User"]
     assert nil == session[:return_to]
   end
 end
