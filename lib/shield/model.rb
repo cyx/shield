@@ -12,8 +12,8 @@ module Shield
       raise FetchMissing
     end
 
-    def is_valid_password?(user, password, encrypted = user.crypted_password)
-      Shield::Password.check(password, encrypted)
+    def is_valid_password?(user, password)
+      Shield::Password.check(password, user.crypted_password)
     end
 
     class FetchMissing < Class.new(StandardError)
