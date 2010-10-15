@@ -34,6 +34,8 @@ module Shield
     def logout(model)
       session.delete(model.to_s)
       session.delete(:return_to)
+
+      @_authenticated.delete(model) if defined?(@_authenticated)
     end
   end
 end

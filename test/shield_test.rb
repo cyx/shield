@@ -103,8 +103,12 @@ test "logout" do |context|
   context.session["User"] = 1001
   context.session[:return_to] = "/foo"
 
+  # Now let's make it memoize the User
+  context.authenticated(User)
+
   context.logout(User)
 
   assert nil == context.session["User"]
   assert nil == context.session[:return_to]
+  assert nil == context.authenticated(User)
 end
