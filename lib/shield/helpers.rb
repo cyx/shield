@@ -12,11 +12,27 @@ module Shield
     end
 
     def current_user
-      @_current_user ||= ::User[session[:user]]
+      @_current_user ||= User[session[:user]]
     end
 
     def redirect_to_stored(default = "/")
       redirect(session.delete(:return_to) || default)
+    end
+
+    def login(username, password)
+      user = User.authenticate(username, password)
+
+      if user
+        session[:user] = user.id
+        return true
+      else
+        return false
+      end
+    end
+
+    def logout
+      session.delete(:user)
+      session.delete(:return_to)
     end
   end
 end

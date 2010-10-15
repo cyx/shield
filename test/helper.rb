@@ -4,12 +4,6 @@ require "shield"
 require "cutest"
 require "rack/test"
 require "sinatra/base"
-require "nokogiri"
-require "haml"
-require "ohm"
-require "ohm/contrib"
-
-prepare { Ohm.flush }
 
 class Cutest::Scope
   include Rack::Test::Methods
