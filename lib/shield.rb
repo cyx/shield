@@ -1,5 +1,5 @@
 module Shield
-  VERSION = "0.0.1"
+  VERSION = "0.0.0"
 
   autoload :BasicUser, "shield/template/basic_user"
   autoload :User,      "shield/template/user"
