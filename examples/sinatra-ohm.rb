@@ -9,7 +9,8 @@
 # and [Sammy][sammy] in Javascript.
 
 # [Ohm][ohm] is a very lightweight Object mapping library using Redis as the
-# backend.
+# backend. Like Sinatra, it is very simple and has inspired several closely
+# similar libraries like [Nohm][nohm], [Johm][johm] and [Redisco][redisco].
 #
 # [sin]: http://sinatrarb.com
 # [mercury]: http://github.com/nrk/mercury
@@ -22,6 +23,9 @@
 # [ohm]: http://ohm.keyvalue.org
 # [shield-contrib]: http://github.com/cyx/shield-contrib
 # [sin-ohm]: http://github.com/cyx/shield/tree/master/examples/sinatra-ohm.rb
+# [nohm]: http://github.com/maritz/nohm
+# [johm]: http://github.com/xetorthio/johm
+# [redisco]: http://github.com/iamteem/redisco
 
 ## Walkthrough
 
