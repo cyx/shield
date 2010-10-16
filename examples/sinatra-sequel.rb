@@ -8,10 +8,10 @@
 # in Python, [Compojure][compojure] in Clojure, [Snap][snap] in Haskell
 # and [Sammy][sammy] in Javascript.
 
-# [Ohm][ohm] is a very lightweight Object mapping library using Redis as the
-# backend. Like Sinatra, it is very simple and has inspired several closely
-# similar libraries like [Nohm][nohm], [Johm][johm] and [Redisco][redisco].
-#
+# [Sequel][sequel] is a lightweight database toolkit for Ruby. One of the most
+# enticing things about Sequel is that it boasts a really pluggale architecture,
+# and that is evident through its heavy use of plugins.
+
 # [sin]: http://sinatrarb.com
 # [mercury]: http://github.com/nrk/mercury
 # [frank]: http://github.com/brucespang/Frank.php
@@ -22,55 +22,62 @@
 # [sammy]: http://code.quirkey.com/sammy/
 # [ohm]: http://ohm.keyvalue.org
 # [shield-contrib]: http://github.com/cyx/shield-contrib
-# [sin-ohm]: http://github.com/cyx/shield/tree/master/examples/sinatra-ohm.rb
-# [nohm]: http://github.com/maritz/nohm
-# [johm]: http://github.com/xetorthio/johm
-# [redisco]: http://github.com/iamteem/redisco
+# [sin-s]: http://github.com/cyx/shield/tree/master/examples/sinatra-sequel.rb
+# [sequel]: http://sequel.rubyforge.org
+# [shield]: http://github.com/cyx/shield
 
 ## Walkthrough
 
-# _A note before we start: You can [view the source][sin-ohm] of this_
+# _A note before we start: You can [view the source][sin-s] of this_
 # _entire example._
-
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
-# For our example, we'll need `sinatra`, `ohm`, `shield` and `haml`.
+# For our example, we'll need `sinatra`, `sequel`, `shield` and `haml`.
 require "sinatra"
-require "ohm"
+require "sequel"
 require "shield"
 require "haml"
 
-### The User model
+# This is just the standard way of configuring your [Sequel][sequel]
+# connection. Here, we use an in-memory Sequel database for the purposes of
+# our demo.
+DB = Sequel.sqlite
 
-# We declare our `User` class to have only the absolute minimum (which is
-# realistic and can be used in the real world).
-class User < Ohm::Model
-  # `Shield::Model` adds an `authenticate` method to your model. You'll
-  # need to implement `fetch` yourself, or you can check out some of the
-  # pre-made solutions in [shield-contrib][shield-contrib].
+### The User Model
+
+# Our `User` model will need only the `schema` plugin for our minimalistic
+# example.
+class User < Sequel::Model
+  plugin :schema
+
+  # All code here is mostly boilerplate just to create the table and define
+  # the schema. The only relation it has to [Shield][shield] is that the
+  # columns are what we would normally expect on our `User` model.
+  unless table_exists?
+    set_schema do
+      primary_key :id
+      text :email
+      text :crypted_password
+    end
+
+    create_table
+  end
+
+  # This marks the start of our `Shield::Model` integration. This gives us a
+  # `User::authenticate` method which accepts a `username` and `password`.
   extend Shield::Model
 
-  # In [Ohm][ohm], you declare all your attributes (different from the usual
-  # ActiveRecord or Sequel style).
-  #
-  # Here we just declare our `email` and `crypted_password` fields. We also
-  # make sure that we can search users by their `email` by declaring it as an
-  # `index`.
-  attribute :email
-  index :email
-
-  attribute :crypted_password
-
-  # The `fetch` protocol is actually really simple to implement. Here we just
-  # find the first user by `email`.
+  # In order to complete the implementation of `User::authenticate`, we simply
+  # have to define our strategy of fetching a `User` given the login name,
+  # which for our demo is the `email` of the `User`.
   def self.fetch(email)
-    find(:email => email).first
+    first(:email => email)
   end
 
   # This isn't required in any way by `Shield` but this is the most simple and
   # straightforward way to do password storage.
   def password=(password)
-    write_local(:crypted_password, Shield::Password.encrypt(password))
+    self.crypted_password = Shield::Password.encrypt(password)
 
     @password = password
   end
@@ -135,6 +142,15 @@ class App < Sinatra::Base
     logout(User)
     redirect "/"
   end
+
+  # Up until now, most authentication solutions made in Ruby had used the
+  # `current_user` method in the context of controllers and views. We can
+  # easily emulate that here by defining it like so:
+  helpers do
+    def current_user
+      authenticated(User)
+    end
+  end
 end
 
 # For the purposes of this demo, we'll create a simple user with
@@ -145,7 +161,7 @@ PASS = "happiness"
 User.create(:email => USER, :password => PASS)
 
 # This is the usual sinatra idiom, which basically means that
-# you can run it by simply doing `ruby examples/sinatra-ohm.rb`.
+# you can run it by simply doing `ruby examples/sinatra-sequel.rb`.
 App.run! if __FILE__ == $0
 
 ### Running this example in your machine
@@ -155,12 +171,10 @@ App.run! if __FILE__ == $0
 #     git clone git://github.com/cyx/shield.git
 #     [sudo] gem install sinatra
 #     [sudo] gem install haml
-#     [sudo] gem install ohm
-#
-#     redis-server
+#     [sudo] gem install sequel sqlite3-ruby
 #
 #     cd shield
-#     ruby examples/sinatra-ohm.rb
+#     ruby examples/sinatra-sequel.rb
 
 __END__
 
