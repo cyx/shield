@@ -21,10 +21,16 @@ _n. A solid piece of metal code used to protect your application._
 The fastest way to get started is by using one of the drop-in solutions
 in [shield-contrib][shield-contrib].
 
-I've also written a [quick and short example][sin-ohm] of using it with
-[Ohm][ohm] and [Sinatra][sin] if you want to understand it a bit more.
+## Tutorials
+
+You can learn more by reading through some of our tutorials:
+
+1. [Sinatra & OHM][sin-ohm]
+2. [Sinatra & Sequel][sin-sequel]
+
 
 [sin]: http://sinatrarb.com
 [ohm]: http://ohm.keyvalue.org
 [shield-contrib]: http://github.com/cyx/shield-contrib
 [sin-ohm]: http://cyx.github.com/shield/sinatra-ohm.html
+[sin-sequel]: http://cyx.github.com/shield/sinatra-sequel.html
