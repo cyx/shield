@@ -22,12 +22,12 @@ module Shield
           !! You need to implement `fetch`.
           Below is a quick example implementation (in Ohm):
 
-            def fetch(username)
-              find(:email => username).first
+            def fetch(email)
+              find(:email => email).first
             end
 
           For more example implementations, check out
-          http://githu.com/cyx/shield-contrib
+          http://github.com/cyx/shield-contrib
         }.gsub(/^ {10}/, "")
       end
     end
