@@ -9,7 +9,7 @@ module Shield
 
     def authenticated(model)
       @_authenticated ||= {}
-      @_authenticated[model] ||= model[session[model.to_s]]
+      @_authenticated[model] ||= session[model.to_s] && model[session[model.to_s]]
     end
 
     def redirect_to_login
