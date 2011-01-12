@@ -1,10 +1,13 @@
 module Shield
   module Helpers
     def ensure_authenticated(model)
-      return if authenticated(model)
-
-      session[:return_to] = request.fullpath
-      redirect_to_login
+      if authenticated(model)
+        return true
+      else
+        session[:return_to] = request.fullpath
+        redirect_to_login
+        return false
+      end
     end
 
     def authenticated(model)
