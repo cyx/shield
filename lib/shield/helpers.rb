@@ -40,5 +40,9 @@ module Shield
 
       @_authenticated.delete(model) if defined?(@_authenticated)
     end
+
+    def authenticate(user)
+      session[user.class.to_s] = user.id
+    end
   end
 end

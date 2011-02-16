@@ -48,7 +48,7 @@ end
 
 test "ensure_authenticated when logged in" do |context|
   context.session["User"] = 1
-  assert nil == context.ensure_authenticated(User)
+  assert true == context.ensure_authenticated(User)
   assert nil == context.redirect
   assert nil == context.session[:return_to]
 end
@@ -111,4 +111,10 @@ test "logout" do |context|
   assert nil == context.session["User"]
   assert nil == context.session[:return_to]
   assert nil == context.authenticated(User)
+end
+
+test "authenticate" do |context|
+  context.authenticate(User[1001])
+
+  assert User[1] == context.authenticated(User)
 end
