@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "shield"
-  s.version = "0.0.3"
+  s.version = "0.0.4"
   s.summary = %{Generic authentication protocol for rack applications.}
   s.description = %Q{
     Provides all the protocol you need in order to do authentication on
@@ -8,10 +8,22 @@ Gem::Specification.new do |s|
     http://github.com/cyx/shield-contrib
   }
   s.authors = ["Michel Martens", "Damian Janowski", "Cyril David"]
-  s.email = ["michel@soveran.com", "djanowski@dimaion.com",
-             "cyx@pipetodevnull.com"]
+  s.email = ["michel@soveran.com", "djanowski@dimaion.com", "me@cyrildavid.com"]
   s.homepage = "http://github.com/cyx/shield"
-  s.files = ["lib/shield/helpers.rb", "lib/shield/model.rb", "lib/shield/password.rb", "lib/shield.rb", "README.markdown", "LICENSE", "Rakefile", "test/helper.rb", "test/model_test.rb", "test/password_hash_test.rb", "test/shield_test.rb", "test/sinatra_test.rb"]
+
+  s.files = [
+    "lib/shield/helpers.rb", 
+    "lib/shield/model.rb", 
+    "lib/shield/password.rb", 
+    "lib/shield/password/simple.rb", 
+    "lib/shield/password/pbkdf2.rb", 
+    "lib/shield.rb", 
+    "test/helper.rb", 
+    "test/model_test.rb", 
+    "test/password_hash_test.rb", 
+    "test/shield_test.rb", 
+    "test/sinatra_test.rb"
+  ]
 
   s.rubyforge_project = "shield"
   s.add_development_dependency "cutest"

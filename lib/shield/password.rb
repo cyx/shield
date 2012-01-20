@@ -2,19 +2,23 @@ require "digest/sha2"
 
 module Shield
   module Password
+    autoload :Simple, "shield/password/simple"
+    autoload :PBKDF2, "shield/password/pbkdf2"
+
+    def self.strategy=(s)
+      @strategy = s
+    end
+
+    def self.strategy
+      @strategy ||= Shield::Password::Simple
+    end
+
     def self.encrypt(password, salt = generate_salt)
-      digest(password, salt) + salt
+      strategy.encrypt(password, salt)
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
-
-      digest(password, salt) == sha512
-    end
-
-  private
-    def self.digest(password, salt)
-      Digest::SHA512.hexdigest("#{ password }#{ salt }")
+      strategy.check(password, encrypted)
     end
 
     def self.generate_salt
