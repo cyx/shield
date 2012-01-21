@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "shield"
-  s.version = "0.0.4.rc1"
+  s.version = "0.1.0.rc1"
   s.summary = %{Generic authentication protocol for rack applications.}
   s.description = %Q{
     Provides all the protocol you need in order to do authentication on
