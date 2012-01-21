@@ -1,11 +1,25 @@
 module Shield
   module Helpers
-    def ensure_authenticated(model)
+    class NoSession < StandardError
+      def message
+        "You must enable sessions to use Shield."
+      end
+    end
+
+    def session
+      env["rack.session"] || raise(NoSession)
+    end
+
+    def redirect(path, status = 302)
+      halt [status, { "Location" => path, "Content-Type" => "text/html" }, []]
+    end
+
+    def ensure_authenticated(model, login_url = "/login")
       if authenticated(model)
         return true
       else
-        session[:return_to] = request.fullpath
-        redirect_to_login
+        session[:return_to] = req.fullpath
+        redirect login_url
         return false
       end
     end
@@ -15,20 +29,18 @@ module Shield
       @_authenticated[model] ||= session[model.to_s] && model[session[model.to_s]]
     end
 
-    def redirect_to_login
-      redirect "/login"
+    def persist_session!
+      if session[:remember_for]
+        env["rack.session.options"][:expire_after] = session[:remember_for]
+      end
     end
 
-    def redirect_to_stored(default = "/")
-      redirect(session.delete(:return_to) || default)
-    end
-
-    def login(model, username, password)
+    def login(model, username, password, remember = false, expire = 1209600)
       instance = model.authenticate(username, password)
 
       if instance
+        session[:remember_for] = expire if remember
         session[model.to_s] = instance.id
-        return true
       else
         return false
       end
@@ -37,6 +49,7 @@ module Shield
     def logout(model)
       session.delete(model.to_s)
       session.delete(:return_to)
+      session.delete(:remember_for)
 
       @_authenticated.delete(model) if defined?(@_authenticated)
     end

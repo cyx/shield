@@ -12,41 +12,53 @@ class User < Struct.new(:id)
   end
 end
 
-class SinatraApp < Sinatra::Base
-  enable :sessions
-  helpers Shield::Helpers
+Cuba.use Rack::Session::Cookie
 
-  get "/public" do
-    "Public"
+Cuba.send :include, Shield::Helpers
+
+Cuba.define do
+  on get, "public" do
+    res.write "Public"
   end
 
-  get "/private" do
+  on get, "private" do
     ensure_authenticated(User)
 
-    "Private"
+    res.write "Private"
   end
 
-  get "/login" do
-    "Login"
+  on get, "login" do
+    res.write "Login"
   end
 
-  post "/login" do
-    if login(User, params[:login], params[:password])
-      redirect_to_stored
+  on post, "login", param("login"), param("password") do |u, p|
+    if login(User, u, p, req[:remember_me])
+      res.redirect(session[:return_to] || "/")
     else
-      redirect_to_login
+      res.redirect "/login"
     end
   end
 
-  get "/logout" do
+  on "logout" do
     logout(User)
-    redirect "/"
+    res.redirect "/"
   end
 end
 
 scope do
   def app
-    SinatraApp.new
+    Cuba
+  end
+
+  def assert_redirected_to(path)
+    unless last_response.status == 302
+      flunk
+    end
+    assert_equal path, URI(last_response.headers["Location"]).path
+  end
+
+  def session
+    last_request.env["rack.session"]
   end
 
   setup do
@@ -60,6 +72,7 @@ scope do
 
   test "successful logging in" do
     get "/private"
+
     assert_redirected_to "/login"
     assert "/private" == session[:return_to]
 
@@ -83,5 +96,15 @@ scope do
 
     assert nil == session["User"]
     assert nil == session[:return_to]
+  end
+
+  test "remember functionality" do
+    post "/login", :login => "quentin", :password => "password", :remember_me => "1"
+
+    assert_equal session[:remember_for], 86400 * 14
+
+    get "/logout"
+
+    assert_equal nil, session[:remember_for]
   end
 end

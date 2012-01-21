@@ -24,7 +24,7 @@ class Context
   class Request < Struct.new(:fullpath)
   end
 
-  def request
+  def req
     Request.new(@path)
   end
 
@@ -71,22 +71,6 @@ test "caches authenticated in @_authenticated" do |context|
   context.authenticated(User)
 
   assert User.new(1) == context.instance_variable_get(:@_authenticated)[User]
-end
-
-test "redirect to stored when :return_to is set" do |context|
-  context.session[:return_to] = "/private"
-  context.redirect_to_stored
-
-  assert "/private" == context.redirect
-  assert nil == context.session[:return_to]
-end
-
-test "redirect to stored when no return to" do |context|
-  context.redirect_to_stored
-  assert "/" == context.redirect
-
-  context.redirect_to_stored("/custom")
-  assert "/custom" == context.redirect
 end
 
 test "login success" do |context|
