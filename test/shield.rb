@@ -17,6 +17,10 @@ class Context
     @path = path
   end
 
+  def env
+    { "SCRIPT_NAME" => "", "PATH_INFO" => @path }
+  end
+
   def session
     @session ||= {}
   end

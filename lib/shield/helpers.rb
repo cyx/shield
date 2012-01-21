@@ -1,24 +1,30 @@
 module Shield
   module Helpers
-    class NoSession < StandardError
-      def message
-        "You must enable sessions to use Shield."
-      end
-    end
+    class NoSessionError < StandardError; end
 
     def session
-      env["rack.session"] || raise(NoSession)
+      env["rack.session"] || raise(NoSessionError)
     end
 
     def redirect(path, status = 302)
-      halt [status, { "Location" => path, "Content-Type" => "text/html" }, []]
+      if defined?(super)
+        # If the application context has defined a proper redirect
+        # we can simply use that definition.
+        super
+      else
+        # We implement the Cuba redirect here, being Cuba users we
+        # are biased towards it of course.
+        halt [status, { "Location" => path, "Content-Type" => "text/html" }, []]
+      end
     end
 
     def ensure_authenticated(model, login_url = "/login")
       if authenticated(model)
         return true
       else
-        session[:return_to] = req.fullpath
+        # If you've ever used request.path, it just so happens
+        # to be SCRIPT_NAME + PATH_INFO.
+        session[:return_to] = env["SCRIPT_NAME"] + env["PATH_INFO"]
         redirect login_url
         return false
       end
