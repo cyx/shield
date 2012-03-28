@@ -1,20 +1,8 @@
 require File.expand_path("helper", File.dirname(__FILE__))
-
-class User < Struct.new(:id)
-  extend Shield::Model
-
-  def self.[](id)
-    User.new(1) unless id.to_s.empty?
-  end
-
-  def self.authenticate(username, password)
-    User.new(1001) if username == "quentin" && password == "password"
-  end
-end
+require File.expand_path("user", File.dirname(__FILE__))
 
 Cuba.use Rack::Session::Cookie
-
-Cuba.send :include, Shield::Helpers
+Cuba.plugin Shield::Helpers
 
 Cuba.define do
   on get, "public" do
@@ -48,17 +36,6 @@ end
 scope do
   def app
     Cuba
-  end
-
-  def assert_redirected_to(path)
-    unless last_response.status == 302
-      flunk
-    end
-    assert_equal path, URI(last_response.headers["Location"]).path
-  end
-
-  def session
-    last_request.env["rack.session"]
   end
 
   setup do

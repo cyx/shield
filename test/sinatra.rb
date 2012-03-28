@@ -1,17 +1,5 @@
 require File.expand_path("helper", File.dirname(__FILE__))
-require "sinatra/base"
-
-class User < Struct.new(:id)
-  extend Shield::Model
-
-  def self.[](id)
-    User.new(1) unless id.to_s.empty?
-  end
-
-  def self.authenticate(username, password)
-    User.new(1001) if username == "quentin" && password == "password"
-  end
-end
+require File.expand_path("user", File.dirname(__FILE__))
 
 class SinatraApp < Sinatra::Base
   enable :sessions
@@ -48,23 +36,6 @@ end
 scope do
   def app
     SinatraApp.new
-  end
-
-  def assert_redirected_to(path)
-    unless last_response.status == 302
-      flunk
-    end
-    assert_equal path, URI(last_response.headers["Location"]).path
-  end
-
-  def session
-    last_request.env["rack.session"]
-  end
-
-  def debug
-    require "open3"
-    out, _, _ = Open3.capture3("elinks -dump", stdin_data: last_response.body)
-    puts out
   end
 
   setup do
