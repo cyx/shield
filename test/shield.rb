@@ -44,19 +44,6 @@ setup do
   Context.new("/events/1")
 end
 
-test "ensure_authenticated when logged out" do |context|
-  context.ensure_authenticated(User)
-  assert "/events/1" == context.session[:return_to]
-  assert "/login" == context.redirect
-end
-
-test "ensure_authenticated when logged in" do |context|
-  context.session["User"] = 1
-  assert true == context.ensure_authenticated(User)
-  assert nil == context.redirect
-  assert nil == context.session[:return_to]
-end
-
 class Admin < Struct.new(:id)
   def self.[](id)
     new(id) unless id.to_s.empty?
@@ -70,11 +57,11 @@ test "authenticated" do |context|
   assert nil == context.authenticated(Admin)
 end
 
-test "caches authenticated in @_authenticated" do |context|
+test "caches authenticated in @_shield" do |context|
   context.session["User"] = 1
   context.authenticated(User)
 
-  assert User.new(1) == context.instance_variable_get(:@_authenticated)[User]
+  assert User.new(1) == context.instance_variable_get(:@_shield)[User]
 end
 
 test "login success" do |context|
@@ -83,13 +70,12 @@ test "login success" do |context|
 end
 
 test "login failure" do |context|
-  assert false == context.login(User, "wrong", "creds")
+  assert ! context.login(User, "wrong", "creds")
   assert nil == context.session["User"]
 end
 
 test "logout" do |context|
   context.session["User"] = 1001
-  context.session[:return_to] = "/foo"
 
   # Now let's make it memoize the User
   context.authenticated(User)
@@ -97,7 +83,6 @@ test "logout" do |context|
   context.logout(User)
 
   assert nil == context.session["User"]
-  assert nil == context.session[:return_to]
   assert nil == context.authenticated(User)
 end
 

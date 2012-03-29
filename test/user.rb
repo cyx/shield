@@ -1,5 +1,5 @@
 class User
-  extend Shield::Model
+  include Shield::Model
 
   def self.[](id)
     User.new(1001) unless id.to_s.empty?

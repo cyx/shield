@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   ]
 
   s.rubyforge_project = "shield"
+  s.add_dependency "pbkdf2"
   s.add_development_dependency "cutest"
   s.add_development_dependency "cuba"
   s.add_development_dependency "sinatra"

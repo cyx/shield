@@ -2,6 +2,7 @@ require File.expand_path("helper", File.dirname(__FILE__))
 require File.expand_path("user", File.dirname(__FILE__))
 
 class SinatraApp < Sinatra::Base
+  use Shield::Middleware
   enable :sessions
   helpers Shield::Helpers
 
@@ -10,7 +11,7 @@ class SinatraApp < Sinatra::Base
   end
 
   get "/private" do
-    ensure_authenticated(User)
+    error(401) unless authenticated(User)
 
     "Private"
   end
@@ -21,7 +22,7 @@ class SinatraApp < Sinatra::Base
 
   post "/login" do
     if login(User, params[:login], params[:password], params[:remember_me])
-      redirect(session[:return_to] || "/")
+      redirect(params[:return] || "/")
     else
       redirect "/login"
     end
@@ -50,10 +51,11 @@ scope do
   test "successful logging in" do
     get "/private"
 
-    assert_redirected_to "/login"
-    assert_equal "/private", session[:return_to]
+    assert_equal "/login?return=%2Fprivate", redirection_url
 
-    post "/login", :login => "quentin", :password => "password"
+    post "/login", :login => "quentin", :password => "password",
+                   :return => "/private"
+
     assert_redirected_to "/private"
 
     assert 1001 == session["User"]
@@ -72,7 +74,6 @@ scope do
     get "/logout"
 
     assert nil == session["User"]
-    assert nil == session[:return_to]
   end
 
   test "remember functionality" do

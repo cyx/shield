@@ -2,6 +2,7 @@ require File.expand_path("helper", File.dirname(__FILE__))
 require File.expand_path("user", File.dirname(__FILE__))
 
 Cuba.use Rack::Session::Cookie
+Cuba.use Shield::Middleware
 Cuba.plugin Shield::Helpers
 
 Cuba.define do
@@ -10,9 +11,11 @@ Cuba.define do
   end
 
   on get, "private" do
-    ensure_authenticated(User)
-
-    res.write "Private"
+    if authenticated(User)
+      res.write "Private"
+    else
+      res.status = 401
+    end
   end
 
   on get, "login" do
@@ -21,7 +24,7 @@ Cuba.define do
 
   on post, "login", param("login"), param("password") do |u, p|
     if login(User, u, p, req[:remember_me])
-      res.redirect(session[:return_to] || "/")
+      res.redirect(req[:return] || "/")
     else
       res.redirect "/login"
     end
@@ -50,10 +53,10 @@ scope do
   test "successful logging in" do
     get "/private"
 
-    assert_redirected_to "/login"
-    assert "/private" == session[:return_to]
+    assert_equal "/login?return=%2Fprivate", redirection_url
 
-    post "/login", :login => "quentin", :password => "password"
+    post "/login", login: "quentin", password: "password", return: "/private"
+
     assert_redirected_to "/private"
 
     assert 1001 == session["User"]
@@ -72,7 +75,6 @@ scope do
     get "/logout"
 
     assert nil == session["User"]
-    assert nil == session[:return_to]
   end
 
   test "remember functionality" do

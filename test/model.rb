@@ -1,7 +1,7 @@
 require File.expand_path("helper", File.dirname(__FILE__))
 
 class User < Struct.new(:crypted_password)
-  extend Shield::Model
+  include Shield::Model
 end
 
 test "fetch" do
@@ -9,12 +9,11 @@ test "fetch" do
 
   begin
     User.fetch("quentin")
-  rescue Exception => e
-    ex = e
+  rescue Exception => ex
   end
 
   assert ex.kind_of?(Shield::Model::FetchMissing)
-  assert Shield::Model::FetchMissing.new.message == ex.message
+  assert "User.fetch not implemented" == ex.message
 end
 
 test "is_valid_password?" do
@@ -42,4 +41,11 @@ test "authenticate" do
   assert user == User.authenticate("quentin", "pass")
   assert nil == User.authenticate("unknown", "pass")
   assert nil == User.authenticate("quentin", "wrongpass")
+end
+
+test "#password=" do
+  u = User.new
+  u.password = "pass1234"
+
+  assert Shield::Password.check("pass1234", u.crypted_password)
 end
