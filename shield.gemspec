@@ -22,4 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "cuba"
   s.add_development_dependency "sinatra"
   s.add_development_dependency "rack-test"
+  s.add_development_dependency "sequel"
+  s.add_development_dependency "ohm", "~> 0.1"
 end
