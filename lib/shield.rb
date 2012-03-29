@@ -1,4 +1,5 @@
 require "pbkdf2"
+require "uri"
 
 module Shield
   class Middleware
