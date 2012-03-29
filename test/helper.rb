@@ -16,6 +16,10 @@ class Cutest::Scope
     assert_equal path, URI(last_response.headers["Location"]).path
   end
 
+  def redirection_url
+    last_response.headers["Location"]
+  end
+
   def session
     last_request.env["rack.session"]
   end
