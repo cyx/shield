@@ -88,7 +88,7 @@ to learn more.
 
 If your requirements dictate that you need to be able to support logging
 in using either username or email, then you can simply extend `User.fetch`
-a bit by doing this: (example code below for Sequel and Ohm)
+a bit by doing:
 
 ```ruby
 # in Sequel
