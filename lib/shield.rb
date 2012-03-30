@@ -24,7 +24,7 @@ module Shield
     def headers(path)
       { "Location" => "%s?return=%s" % [url, encode(path)],
         "Content-Type" => "text/html",
-        "Content-Length" => 0
+        "Content-Length" => "0"
       }
     end
 
