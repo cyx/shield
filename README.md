@@ -113,7 +113,7 @@ end
 ```
 
 If you want to allow case-insensitive logins for some reason, you can
-simply normalize the values to a `downcase`d version.
+simply normalize the values to their lowercase form.
 
 [ohm]: http://ohm.keyvalue.org
 [sequel]: http://sequel.rubyforge.org
