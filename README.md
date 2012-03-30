@@ -121,9 +121,110 @@ simply normalize the values to their lowercase form.
 [ohm-test]: https://github.com/cyx/shield/blob/master/test/ohm.rb
 [sequel-test]: https://github.com/cyx/shield/blob/master/test/sequel.rb
 
-## Getting started
+### Shield::Helpers
 
-The fastest way to get started is by cloning the sample cuba-app
-located [here][cuba-app].
+As the name suggests, `Shield::Helpers` is out there to aid you a bit,
+but this time it aids you in the context of your Rack application.
+
+`Shield::Helpers` assumes only the following:
+
+1. You have included in your application a Session handler,
+   (e.g. Rack::Session::Cookie)
+2. You have an `env` method which returns the environment hash as
+   was passed in Rack.
+
+**Note:** As of this writing, Sinatra, Cuba & Rails adhere to having an `env`
+method in the handler / controller context. Shield also ships with tests for
+both Cuba and Sinatra.
+
+```ruby
+require "sinatra"
+
+# Satisifies assumption number 1 above.
+use Rack::Session::Cookie
+
+# Mixes `Shield::Helpers` into your routes context.
+helpers Shield::Helpers
+
+get "/private" do
+  error(401) unless authenticated(User)
+
+  "Private"
+end
+
+get "/login" do
+  erb :login
+end
+
+post "/login" do
+  if login(User, params[:login], params[:password], params[:remember_me])
+    redirect(params[:return] || "/")
+  else
+    redirect "/login"
+  end
+end
+
+get "/logout" do
+  logout(User)
+  redirect "/"
+end
+
+__END__
+
+@@ login
+<h1>Login</h1>
+
+<form action='/login' method='post'>
+<input type='text' name='login' placeholder='Email'>
+<input type='password' name='password' placeholder='Password'>
+<input type='submit' name='proceed' value='Login'>
+```
+
+**Notes for the reader**: The redirect to `params[:return]` in the example
+is vulnerable to URL hijacking. You can whitelist redirectable urls, or
+simply make sure the URL matches the pattern `/\A[\/a-z0-9\-]+\z/i`.
+
+### Shield::Middleware
+
+If you have a keen eye you might have noticed that instead of redirecting
+away to the login URL in the example above, we instead chose to do a
+`401 Unauthorized`. In strict HTTP Status code terms, this is the proper
+approach. The redirection is simply the user experience pattern that has
+emerged in web applications.
+
+But don't despair! If you want to do redirects simply add
+`Shield::Middleware` to your middleware stack like so:
+
+```ruby
+# taken from example above
+use Shield::Middleware, "/login"
+use Rack::Session::Cookie
+
+# rest of code follows here
+# ...
+```
+
+Now when your application responds with a `401`, `Shield::Middleware`
+will be responsible for doing the redirect to `/login`.
+
+If you try and do a `curl --head http://localhost:4567/private` with
+`Shield::Middleware`, you'll get a response similar to the following:
+
+```
+HTTP/1.1 302 Found
+Location: http://localhost:4567/login?return=%2Fprivate
+Content-Type: text/html
+```
+
+Notice that it specifies `/private` as the return URL.
+
+## Jump starting your way.
+
+For people interested in using Cuba, Ohm, Shield and Bootstrap we've
+created a starting point that includes **Login**, **Signup** and
+**Forgot Password** functionality.
+
+Head on over to the [cuba-app][cuba-app] repository if you want
+to know more.
 
 [cuba-app]: http://github.com/citrusbyte/cuba-app
