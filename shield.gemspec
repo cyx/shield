@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "shield"
-  s.version = "0.1.0"
+  s.version = "1.0.0.rc1"
   s.summary = %{Generic authentication protocol for rack applications.}
   s.description = %Q{
     Provides all the protocol you need in order to do authentication on
@@ -12,11 +12,13 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/cyx/shield"
 
   s.files = Dir[
+    "README*",
+    "LICENSE",
+    "Rakefile",
     "lib/**/*.rb",
     "test/**/*.rb"
   ]
 
-  s.rubyforge_project = "shield"
   s.add_dependency "pbkdf2"
   s.add_development_dependency "cutest"
   s.add_development_dependency "cuba"
