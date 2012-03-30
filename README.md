@@ -180,7 +180,7 @@ __END__
 <input type='submit' name='proceed' value='Login'>
 ```
 
-**Notes for the reader**: The redirect to `params[:return]` in the example
+**Note for the reader**: The redirect to `params[:return]` in the example
 is vulnerable to URL hijacking. You can whitelist redirectable urls, or
 simply make sure the URL matches the pattern `/\A[\/a-z0-9\-]+\z/i`.
 
