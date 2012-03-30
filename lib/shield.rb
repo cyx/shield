@@ -34,12 +34,6 @@ module Shield
   end
 
   module Helpers
-    class NoSessionError < StandardError; end
-
-    def session
-      env["rack.session"] || raise(NoSessionError)
-    end
-
     def persist_session!
       if session[:remember_for]
         env["rack.session.options"][:expire_after] = session[:remember_for]
