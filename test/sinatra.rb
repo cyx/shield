@@ -86,3 +86,7 @@ scope do
     assert_equal nil, session[:remember_for]
   end
 end
+
+if $0 == __FILE__
+  SinatraApp.run!
+end
