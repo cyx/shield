@@ -14,7 +14,7 @@ module Shield
       tuple = @app.call(env)
 
       if tuple[0] == 401
-        [302, headers(env["PATH_INFO"]), []]
+        [302, headers(env["SCRIPT_NAME"] + env["PATH_INFO"]), []]
       else
         tuple
       end
