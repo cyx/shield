@@ -6,3 +6,4 @@ pbkdf2 -v 0.1.0
 sinatra -v 1.3.2
 sequel -v 3.33.0
 sqlite3 -v 1.3.5
+ohm -v 0.1.5
