@@ -140,7 +140,7 @@ both Cuba and Sinatra.
 ```ruby
 require "sinatra"
 
-# Satisifies assumption number 1 above.
+# Satisfies assumption number 1 above.
 use Rack::Session::Cookie
 
 # Mixes `Shield::Helpers` into your routes context.
