@@ -74,7 +74,7 @@ nil == User.authenticate("foo@bar.com", "pass1234")
 
 # If we try a different password on the other hand,
 # we get `nil`.
-nil == User.authenicate("foo@bar.com", "wrong")
+nil == User.authenticate("foo@bar.com", "wrong")
 # => true
 ```
 
