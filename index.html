@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Shield by cyx</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Shield</h1>
+        <p>Authentication protocol for use in your routing and model context</p>
+        <p class="view"><a href="https://github.com/cyx/shield">View the Project on GitHub <small>cyx/shield</small></a></p>
+        <ul>
+          <li><a href="https://github.com/cyx/shield/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cyx/shield/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cyx/shield">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Shield</h1>
+
+<p><em>n. A solid piece of metal code used to protect your application.</em></p>
+
+<h2>Why another authentication library?</h2>
+
+<ol>
+<li>Because most of the other libraries are too huge.</li>
+<li>Extending other libraries is a pain.</li>
+<li>Writing code is fun :-)</li>
+</ol><h2>What shield is</h2>
+
+<ol>
+<li>Simple (~ 110 lines of Ruby code)</li>
+<li>Doesn't get in the way</li>
+<li>Treats you like a grown up</li>
+</ol><h2>What shield is not</h2>
+
+<ul>
+<li>is <em>not</em> a ready-made end-to-end authentication solution.</li>
+<li>is <em>not</em> biased towards any kind of ORM.</li>
+</ul><h2>Understanding Shield in 15 minutes</h2>
+
+<h3>Shield::Model</h3>
+
+<p><code>Shield::Model</code> is a very basic protocol for doing authentication
+against your model. It doesn't assume a lot, apart from the following:</p>
+
+<ol>
+<li>You will implement <code>User.fetch</code> which receives the login string.</li>
+<li>You have an attribute <code>crypted_password</code> which is able to store
+up to <strong>192</strong> characters.</li>
+</ol><p>And that's it.</p>
+
+<p>In order to implement the model protocol, you start by
+including <code>Shield::Model</code>.</p>
+
+<div class="highlight">
+<pre><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">Struct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:email</span><span class="p">,</span> <span class="ss">:crypted_password</span><span class="p">)</span>
+  <span class="kp">include</span> <span class="no">Shield</span><span class="o">::</span><span class="no">Model</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">fetch</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="kp">new</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">"pass1234"</span>
+
+    <span class="k">return</span> <span class="n">user</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>By including <code>Shield::Model</code>, you get all the general methods needed
+in order to do authentication.</p>
+
+<ol>
+<li>You get <code>User.authenticate</code> which receives the login string and
+password as the two parameters.</li>
+<li>You get <code>User#password=</code> which automatically converts the clear text
+password into a hashed form and assigns it into <code>#crypted_password</code>.</li>
+</ol><div class="highlight">
+<pre><span class="n">u</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"foo@bar.com"</span><span class="p">)</span>
+
+<span class="c1"># A password accessor has been added which manages `crypted_password`.</span>
+<span class="n">u</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">"pass1234"</span>
+
+<span class="no">Shield</span><span class="o">::</span><span class="no">Password</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">"pass1234"</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">crypted_password</span><span class="p">)</span>
+<span class="c1"># =&gt; true</span>
+
+<span class="c1"># Since we've hard coded all passwords to pass1234</span>
+<span class="c1"># we're able to authenticate properly.</span>
+<span class="kp">nil</span> <span class="o">==</span> <span class="no">User</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="s2">"foo@bar.com"</span><span class="p">,</span> <span class="s2">"pass1234"</span><span class="p">)</span>
+<span class="c1"># =&gt; false</span>
+
+<span class="c1"># If we try a different password on the other hand,</span>
+<span class="c1"># we get `nil`.</span>
+<span class="kp">nil</span> <span class="o">==</span> <span class="no">User</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="s2">"foo@bar.com"</span><span class="p">,</span> <span class="s2">"wrong"</span><span class="p">)</span>
+<span class="c1"># =&gt; true</span>
+</pre>
+</div>
+
+
+<p>Shield includes tests for <a href="http://ohm.keyvalue.org">ohm</a> and <a href="http://sequel.rubyforge.org">sequel</a> and makes sure
+that each release works with the latest respective versions.</p>
+
+<p>Take a look at <a href="https://github.com/cyx/shield/blob/master/test/ohm.rb">test/ohm.rb</a> and <a href="https://github.com/cyx/shield/blob/master/test/sequel.rb">test/sequel.rb</a>
+to learn more.</p>
+
+<h3>Logging in with an email and username?</h3>
+
+<p>If your requirements dictate that you need to be able to support logging
+in using either username or email, then you can simply extend <code>User.fetch</code>
+a bit by doing:</p>
+
+<div class="highlight">
+<pre><span class="c1"># in Sequel</span>
+<span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">fetch</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="n">filter</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">first</span> <span class="o">||</span> <span class="n">filter</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="n">identifier</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># in Ohm</span>
+<span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">Ohm</span><span class="o">::</span><span class="no">Model</span>
+  <span class="n">attribute</span> <span class="ss">:email</span>
+  <span class="n">attribute</span> <span class="ss">:username</span>
+
+  <span class="n">unique</span> <span class="ss">:email</span>
+  <span class="n">unique</span> <span class="ss">:username</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">fetch</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="n">with</span><span class="p">(</span><span class="ss">:email</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span> <span class="o">||</span> <span class="n">with</span><span class="p">(</span><span class="ss">:username</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>If you want to allow case-insensitive logins for some reason, you can
+simply normalize the values to their lowercase form.</p>
+
+<h3>Shield::Helpers</h3>
+
+<p>As the name suggests, <code>Shield::Helpers</code> is out there to aid you a bit,
+but this time it aids you in the context of your Rack application.</p>
+
+<p><code>Shield::Helpers</code> assumes only the following:</p>
+
+<ol>
+<li>You have included in your application a Session handler,
+(e.g. Rack::Session::Cookie)</li>
+<li>You have an <code>env</code> method which returns the environment hash as
+was passed in Rack.</li>
+</ol><p><strong>Note:</strong> As of this writing, Sinatra, Cuba &amp; Rails adhere to having an <code>env</code>
+method in the handler / controller context. Shield also ships with tests for
+both Cuba and Sinatra.</p>
+
+<div class="highlight">
+<pre><span class="nb">require</span> <span class="s2">"sinatra"</span>
+
+<span class="c1"># Satisfies assumption number 1 above.</span>
+<span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Session</span><span class="o">::</span><span class="no">Cookie</span>
+
+<span class="c1"># Mixes `Shield::Helpers` into your routes context.</span>
+<span class="n">helpers</span> <span class="no">Shield</span><span class="o">::</span><span class="no">Helpers</span>
+
+<span class="n">get</span> <span class="s2">"/private"</span> <span class="k">do</span>
+  <span class="n">error</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span> <span class="k">unless</span> <span class="n">authenticated</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
+
+  <span class="s2">"Private"</span>
+<span class="k">end</span>
+
+<span class="n">get</span> <span class="s2">"/login"</span> <span class="k">do</span>
+  <span class="n">erb</span> <span class="ss">:login</span>
+<span class="k">end</span>
+
+<span class="n">post</span> <span class="s2">"/login"</span> <span class="k">do</span>
+  <span class="k">if</span> <span class="n">login</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="n">params</span><span class="o">[</span><span class="ss">:login</span><span class="o">]</span><span class="p">,</span> <span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">,</span> <span class="n">params</span><span class="o">[</span><span class="ss">:remember_me</span><span class="o">]</span><span class="p">)</span>
+    <span class="n">redirect</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:return</span><span class="o">]</span> <span class="o">||</span> <span class="s2">"/"</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">redirect</span> <span class="s2">"/login"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">get</span> <span class="s2">"/logout"</span> <span class="k">do</span>
+  <span class="n">logout</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
+  <span class="n">redirect</span> <span class="s2">"/"</span>
+<span class="k">end</span>
+
+<span class="cp">__END__</span>
+
+<span class="cp">@@ login</span>
+<span class="cp">&lt;h1&gt;Login&lt;/h1&gt;</span>
+
+<span class="cp">&lt;form action='/login' method='post'&gt;</span>
+<span class="cp">&lt;input type='text' name='login' placeholder='Email'&gt;</span>
+<span class="cp">&lt;input type='password' name='password' placeholder='Password'&gt;</span>
+<span class="cp">&lt;input type='submit' name='proceed' value='Login'&gt;</span>
+</pre>
+</div>
+
+
+<p><strong>Note for the reader</strong>: The redirect to <code>params[:return]</code> in the example
+is vulnerable to URL hijacking. You can whitelist redirectable urls, or
+simply make sure the URL matches the pattern <code>/\A[\/a-z0-9\-]+\z/i</code>.</p>
+
+<h3>Shield::Middleware</h3>
+
+<p>If you have a keen eye you might have noticed that instead of redirecting
+away to the login URL in the example above, we instead chose to do a
+<code>401 Unauthorized</code>. In strict HTTP Status code terms, this is the proper
+approach. The redirection is simply the user experience pattern that has
+emerged in web applications.</p>
+
+<p>But don't despair! If you want to do redirects simply add
+<code>Shield::Middleware</code> to your middleware stack like so:</p>
+
+<div class="highlight">
+<pre><span class="c1"># taken from example above</span>
+<span class="n">use</span> <span class="no">Shield</span><span class="o">::</span><span class="no">Middleware</span><span class="p">,</span> <span class="s2">"/login"</span>
+<span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Session</span><span class="o">::</span><span class="no">Cookie</span>
+
+<span class="c1"># rest of code follows here</span>
+<span class="c1"># ...</span>
+</pre>
+</div>
+
+
+<p>Now when your application responds with a <code>401</code>, <code>Shield::Middleware</code>
+will be responsible for doing the redirect to <code>/login</code>.</p>
+
+<p>If you try and do a <code>curl --head http://localhost:4567/private</code> with
+<code>Shield::Middleware</code>, you'll get a response similar to the following:</p>
+
+<pre><code>HTTP/1.1 302 Found
+Location: http://localhost:4567/login?return=%2Fprivate
+Content-Type: text/html
+</code></pre>
+
+<p>Notice that it specifies <code>/private</code> as the return URL.</p>
+
+<h2>Jump starting your way.</h2>
+
+<p>For people interested in using Cuba, Ohm, Shield and Bootstrap we've
+created a starting point that includes <strong>Login</strong>, <strong>Signup</strong> and
+<strong>Forgot Password</strong> functionality.</p>
+
+<p>Head on over to the <a href="http://github.com/citrusbyte/cuba-app">cuba-app</a> repository if you want
+to know more.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cyx">cyx</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
