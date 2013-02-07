@@ -84,6 +84,21 @@ that each release works with the latest respective versions.
 Take a look at [test/ohm.rb][ohm-test] and [test/sequel.rb][sequel-test]
 to learn more.
 
+To make Shield work with other ORMs (such as DataMapper), make sure to implement
+an `.[]` method which fetches the user instance by id. 
+
+```ruby
+class User
+  include Shield::Model
+
+  # ...
+
+  self.[](id)
+    get id
+  end
+end
+```
+
 ### Logging in with an email and username?
 
 If your requirements dictate that you need to be able to support logging
