@@ -1,4 +1,3 @@
-require "pbkdf2"
 require "uri"
 
 module Shield
@@ -108,23 +107,32 @@ module Shield
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
-
-      digest(password, salt) == sha512
+      encascii = encrypted.force_encoding('ASCII-8BIT')
+      sha, salt = encascii.to_s[0..127], encascii.to_s[128..-1]
+      
+      eql_time_cmp(digest(password, salt), sha)
     end
 
   protected
     def self.digest(password, salt)
-      PBKDF2.new do |p|
-        p.password = password
-        p.salt = salt
-        p.iterations = iterations
-        p.hash_function = :sha512
-      end.hex_string
+      OpenSSL::PKCS5.pbkdf2_hmac_sha1(password, salt, iterations, 128)
     end
 
     def self.generate_salt
-      Digest::SHA512.hexdigest(Time.now.to_f.to_s)[0, 64]
+      OpenSSL::Random.random_bytes(128)
     end
+    
+    def self.eql_time_cmp(a, b)
+      unless a.length == b.length
+        return false
+      end
+      cmp = b.bytes.to_a
+      result = 0
+      a.bytes.each_with_index {|c,i|
+        result |= c ^ cmp[i]
+      }
+      result == 0
+    end
+    
   end
 end
