@@ -1,7 +1,7 @@
 require File.expand_path("helper", File.dirname(__FILE__))
 require File.expand_path("user", File.dirname(__FILE__))
 
-Cuba.use Rack::Session::Cookie
+Cuba.use Rack::Session::Cookie, secret: "foo"
 Cuba.plugin Shield::Helpers
 
 class Admin < Cuba
