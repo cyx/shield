@@ -1,4 +1,4 @@
-require "openssl"
+require "shield/pbkdf2"
 require "uri"
 
 module Shield
