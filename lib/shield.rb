@@ -110,7 +110,7 @@ module Shield
     def self.check(password, encrypted)
       sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
 
-      eql_time_cmp(digest(password, salt), sha512)
+      compare(digest(password, salt), sha512)
     end
 
   protected
@@ -135,7 +135,10 @@ module Shield
       binary_string.unpack("H*").first
     end
 
-    def self.eql_time_cmp(a, b)
+    # Time-attack safe comparison operator.
+    #
+    # @see http://bit.ly/WHHHz1
+    def self.compare(a, b)
       return false unless a.length == b.length
 
       cmp = b.bytes.to_a
