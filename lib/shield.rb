@@ -1,4 +1,4 @@
-require "pbkdf2"
+require "openssl"
 require "uri"
 
 module Shield
@@ -95,40 +95,41 @@ module Shield
   end
 
   module Password
-    def self.iterations
-      @iterations ||= 5000
+    class << self
+      attr_accessor :iterations, :hash_function
     end
 
-    def self.iterations=(iterations)
-      @iterations = iterations
-    end
+    @iterations = 5000
+    @hash_function = OpenSSL::Digest::SHA512.new
 
     def self.encrypt(password, salt = generate_salt)
       digest(password, salt) + salt
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
+      sha512, salt = encrypted.to_s[0...hash_length], encrypted.to_s[hash_length..-1]
 
       compare(digest(password, salt), sha512)
     end
 
   protected
+    def self.hash_length
+      hash_function.length * 2
+    end
+
     def self.generate_salt
       hex_string OpenSSL::Random.random_bytes(32)
     end
 
     def self.digest(password, salt)
-      hex_string(pbkdf2_hmac_512(password, salt))
+      hex_string(pbkdf2_hmac(password, salt))
     end
 
-    def self.pbkdf2_hmac_512(password, salt)
-      digest = OpenSSL::Digest::SHA512.new
-
+    def self.pbkdf2_hmac(password, salt)
       OpenSSL::PKCS5.pbkdf2_hmac(password, salt,
                                  iterations,
-                                 digest.digest_length,
-                                 digest)
+                                 hash_function.digest_length,
+                                 hash_function)
     end
 
     def self.hex_string(binary_string)

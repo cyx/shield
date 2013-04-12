@@ -1,10 +1,8 @@
-$:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
-
-require "shield"
 require "cutest"
 require "rack/test"
 require "cuba"
-require "sinatra/base"
+
+require File.expand_path("../lib/shield", File.dirname(__FILE__))
 
 class Cutest::Scope
   include Rack::Test::Methods
@@ -24,3 +22,6 @@ class Cutest::Scope
     last_request.env["rack.session"]
   end
 end
+
+Shield::Password.iterations = ENV["ITERATIONS"].to_i
+Shield::Password.hash_function = OpenSSL::Digest.const_get(ENV["HASH_FUNCTION"]).new
