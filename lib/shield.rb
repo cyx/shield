@@ -1,4 +1,4 @@
-require "pbkdf2"
+require "shield/pbkdf2"
 require "uri"
 
 module Shield
