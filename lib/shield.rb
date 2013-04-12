@@ -110,21 +110,42 @@ module Shield
     def self.check(password, encrypted)
       sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
 
-      digest(password, salt) == sha512
+      eql_time_cmp(digest(password, salt), sha512)
     end
 
   protected
-    def self.digest(password, salt)
-      PBKDF2.new do |p|
-        p.password = password
-        p.salt = salt
-        p.iterations = iterations
-        p.hash_function = :sha512
-      end.hex_string
+    def self.generate_salt
+      hex_string OpenSSL::Random.random_bytes(32)
     end
 
-    def self.generate_salt
-      Digest::SHA512.hexdigest(Time.now.to_f.to_s)[0, 64]
+    def self.digest(password, salt)
+      hex_string(pbkdf2_hmac_512(password, salt))
+    end
+
+    def self.pbkdf2_hmac_512(password, salt)
+      digest = OpenSSL::Digest::SHA512.new
+
+      OpenSSL::PKCS5.pbkdf2_hmac(password, salt,
+                                 iterations,
+                                 digest.digest_length,
+                                 digest)
+    end
+
+    def self.hex_string(binary_string)
+      binary_string.unpack("H*").first
+    end
+
+    def self.eql_time_cmp(a, b)
+      return false unless a.length == b.length
+
+      cmp = b.bytes.to_a
+      result = 0
+
+      a.bytes.each_with_index do |char,index|
+        result |= char ^ cmp[index]
+      end
+
+      return result == 0
     end
   end
 end
