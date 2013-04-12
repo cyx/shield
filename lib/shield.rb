@@ -108,7 +108,8 @@ module Shield
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
+      # sha512, salt = encrypted.to_s[0..127], encrypted.to_s[128..-1]
+      sha512, salt = encrypted.to_s[0..39], encrypted.to_s[40..-1]
 
       compare(digest(password, salt), sha512)
     end
@@ -123,7 +124,7 @@ module Shield
     end
 
     def self.pbkdf2_hmac_512(password, salt)
-      digest = OpenSSL::Digest::SHA512.new
+      digest = OpenSSL::Digest::SHA1.new
 
       OpenSSL::PKCS5.pbkdf2_hmac(password, salt,
                                  iterations,
