@@ -1,4 +1,5 @@
-require "shield/pbkdf2"
+require "pbkdf2"
+require "shield/core_ext"
 require "uri"
 
 module Shield
@@ -96,44 +97,32 @@ module Shield
 
   module Password
     class << self
-      attr_accessor :iterations, :hash_function
+      attr_accessor :iterations
     end
-
     @iterations = 5000
-    @hash_function = OpenSSL::Digest::SHA512.new
 
     def self.encrypt(password, salt = generate_salt)
       digest(password, salt) + salt
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0...hash_length], encrypted.to_s[hash_length..-1]
+      sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
 
       compare(digest(password, salt), sha512)
     end
 
   protected
-    def self.hash_length
-      hash_function.length * 2
-    end
-
     def self.generate_salt
-      hex_string OpenSSL::Random.random_bytes(32)
+      Digest::SHA512.hexdigest(Time.now.to_f.to_s)[0, 64]
     end
 
     def self.digest(password, salt)
-      hex_string(pbkdf2_hmac(password, salt))
-    end
-
-    def self.pbkdf2_hmac(password, salt)
-      OpenSSL::PKCS5.pbkdf2_hmac(password, salt,
-                                 iterations,
-                                 hash_function.digest_length,
-                                 hash_function)
-    end
-
-    def self.hex_string(binary_string)
-      binary_string.unpack("H*").first
+      PBKDF2.new do |p|
+        p.password = password
+        p.salt = salt
+        p.iterations = iterations
+        p.hash_function = :sha512
+      end.hex_string
     end
 
     # Time-attack safe comparison operator.

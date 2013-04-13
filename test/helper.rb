@@ -22,6 +22,3 @@ class Cutest::Scope
     last_request.env["rack.session"]
   end
 end
-
-Shield::Password.iterations = ENV["ITERATIONS"].to_i
-Shield::Password.hash_function = OpenSSL::Digest.const_get(ENV["HASH_FUNCTION"]).new
