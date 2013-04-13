@@ -1,2 +1,2 @@
-all:
-	RUBYLIB=./lib cutest -r ./test/helper test/*_test.rb
+test:
+	RUBYLIB=./lib cutest -r ./tests/helper tests/*_test.rb
