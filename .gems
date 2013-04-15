@@ -1,3 +1,4 @@
 cutest -v 1.2.0
 rack-test -v 0.6.2
 cuba -v 3.1.0
+armor -v 0.0.2
