@@ -179,7 +179,8 @@ get "/login" do
 end
 
 post "/login" do
-  if login(User, params[:login], params[:password], params[:remember_me])
+  if login(User, params[:login], params[:password])
+    remember(authenticated(User)) if params[:remember_me]
     redirect(params[:return] || "/")
   else
     redirect "/login"

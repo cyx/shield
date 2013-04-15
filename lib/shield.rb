@@ -49,11 +49,13 @@ module Shield
       session[user.class.to_s] = user.id
     end
 
-    def login(model, username, password, remember = false, expire = 1209600)
-      return unless user = model.authenticate(username, password)
+    def login(model, username, password)
+      user = model.authenticate(username, password)
+      authenticate(user) if user
+    end
 
-      session[:remember_for] = expire if remember
-      authenticate(user)
+    def remember(user, expire = 1209600)
+      session[:remember_for] = expire
     end
 
     def logout(model)

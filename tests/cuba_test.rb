@@ -23,7 +23,8 @@ Cuba.define do
   end
 
   on post, "login", param("login"), param("password") do |u, p|
-    if login(User, u, p, req[:remember_me])
+    if login(User, u, p)
+      remember(authenticated(User)) if req[:remember_me]
       res.redirect(req[:return] || "/")
     else
       res.redirect "/login"
