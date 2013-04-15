@@ -1,42 +1,44 @@
 require File.expand_path("helper", File.dirname(__FILE__))
 require File.expand_path("user", File.dirname(__FILE__))
 
-class SinatraApp < Sinatra::Base
-  use Shield::Middleware
-  enable :sessions
-  helpers Shield::Helpers
+Cuba.use Rack::Session::Cookie, secret: "foo"
+Cuba.use Shield::Middleware
+Cuba.plugin Shield::Helpers
 
-  get "/public" do
-    "Public"
+Cuba.define do
+  on get, "public" do
+    res.write "Public"
   end
 
-  get "/private" do
-    error(401) unless authenticated(User)
-
-    "Private"
-  end
-
-  get "/login" do
-    "Login"
-  end
-
-  post "/login" do
-    if login(User, params[:login], params[:password], params[:remember_me])
-      redirect(params[:return] || "/")
+  on get, "private" do
+    if authenticated(User)
+      res.write "Private"
     else
-      redirect "/login"
+      res.status = 401
     end
   end
 
-  get "/logout" do
+  on get, "login" do
+    res.write "Login"
+  end
+
+  on post, "login", param("login"), param("password") do |u, p|
+    if login(User, u, p, req[:remember_me])
+      res.redirect(req[:return] || "/")
+    else
+      res.redirect "/login"
+    end
+  end
+
+  on "logout" do
     logout(User)
-    redirect "/"
+    res.redirect "/"
   end
 end
 
 scope do
   def app
-    SinatraApp.new
+    Cuba
   end
 
   setup do
@@ -53,8 +55,7 @@ scope do
 
     assert_equal "/login?return=%2Fprivate", redirection_url
 
-    post "/login", :login => "quentin", :password => "password",
-                   :return => "/private"
+    post "/login", login: "quentin", password: "password", return: "/private"
 
     assert_redirected_to "/private"
 
@@ -85,8 +86,4 @@ scope do
 
     assert_equal nil, session[:remember_for]
   end
-end
-
-if $0 == __FILE__
-  SinatraApp.run!
 end

@@ -1,3 +1,4 @@
+require "armor"
 require "uri"
 
 module Shield
@@ -94,45 +95,25 @@ module Shield
   end
 
   module Password
-    def self.iterations
-      @iterations ||= 5000
+    class << self
+      attr_accessor :iterations
     end
 
-    def self.iterations=(iterations)
-      @iterations = iterations
-    end
+    @iterations = 5000
 
     def self.encrypt(password, salt = generate_salt)
-      digest(password, salt) + salt
+      Armor.digest(password, salt) + salt
     end
 
     def self.check(password, encrypted)
-      encascii = encrypted.force_encoding('ASCII-8BIT')
-      sha, salt = encascii.to_s[0..127], encascii.to_s[128..-1]
-      
-      eql_time_cmp(digest(password, salt), sha)
+      sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
+
+      Armor.compare(Armor.digest(password, salt), sha512)
     end
 
   protected
-    def self.digest(password, salt)
-      OpenSSL::PKCS5.pbkdf2_hmac_sha1(password, salt, iterations, 128)
-    end
-
     def self.generate_salt
       OpenSSL::Random.random_bytes(128)
     end
-    
-    def self.eql_time_cmp(a, b)
-      unless a.length == b.length
-        return false
-      end
-      cmp = b.bytes.to_a
-      result = 0
-      a.bytes.each_with_index {|c,i|
-        result |= c ^ cmp[i]
-      }
-      result == 0
-    end
-    
   end
 end

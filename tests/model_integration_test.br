@@ -1,24 +1,23 @@
 require_relative "helper"
-require "ohm"
 
-class User < Ohm::Model
+class User
   include Shield::Model
 
-  attribute :email
-  attribute :crypted_password
-  index :email
+  attr_accessor :email, :crypted_password
 
   def self.fetch(email)
-    find(email: email).first
+    $users[email]
+  end
+
+  def initialize(email, password)
+    @email = email
+    self.password = password
   end
 end
 
-prepare do
-  Ohm.flush
-end
-
 setup do
-  User.create(email: "foo@bar.com", password: "pass1234")
+  $users = {}
+  $users["foo@bar.com"] = User.new("foo@bar.com", "pass1234")
 end
 
 test "fetch" do |user|
