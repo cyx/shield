@@ -107,28 +107,12 @@ module Shield
     def self.check(password, encrypted)
       sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
 
-      compare(Armor.digest(password, salt), sha512)
+      Armor.compare(Armor.digest(password, salt), sha512)
     end
 
   protected
     def self.generate_salt
       Digest::SHA512.hexdigest(Time.now.to_f.to_s)[0, 64]
-    end
-
-    # Time-attack safe comparison operator.
-    #
-    # @see http://bit.ly/WHHHz1
-    def self.compare(a, b)
-      return false unless a.length == b.length
-
-      cmp = b.bytes.to_a
-      result = 0
-
-      a.bytes.each_with_index do |char,index|
-        result |= char ^ cmp[index]
-      end
-
-      return result == 0
     end
   end
 end
