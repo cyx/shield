@@ -95,12 +95,6 @@ module Shield
   end
 
   module Password
-    class << self
-      attr_accessor :iterations
-    end
-
-    @iterations = 5000
-
     def self.encrypt(password, salt = generate_salt)
       Armor.digest(password, salt) + salt
     end
