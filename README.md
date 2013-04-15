@@ -233,13 +233,10 @@ Content-Type: text/html
 
 Notice that it specifies `/private` as the return URL.
 
-## Jump starting your way.
+## Installation
 
-For people interested in using Cuba, Ohm, Shield and Bootstrap we've
-created a starting point that includes **Login**, **Signup** and
-**Forgot Password** functionality.
+You can install it using rubygems:
 
-Head on over to the [cuba-app][cuba-app] repository if you want
-to know more.
-
-[cuba-app]: http://github.com/citrusbyte/cuba-app
+```
+gem install shield
+```
