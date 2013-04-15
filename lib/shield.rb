@@ -113,7 +113,7 @@ module Shield
 
   protected
     def self.generate_salt
-      OpenSSL::Random.random_bytes(128)
+      Armor.hex(OpenSSL::Random.random_bytes(32))
     end
   end
 end
