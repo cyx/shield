@@ -82,12 +82,6 @@ Shield uses [Armor][armor] for encrypting passwords. Armor is a pure ruby
 implementation of [PBKDF2][pbkdf2], a password-based key derivation function
 recommended for the protection of electronically-stored data.
 
-Shield also includes tests for [ohm][ohm] and [sequel][sequel] and makes sure
-that each release works with the latest respective versions.
-
-Take a look at [test/ohm.rb][ohm-test] and [test/sequel.rb][sequel-test]
-to learn more.
-
 To make Shield work with other ORMs (such as DataMapper), make sure to implement
 an `.[]` method which fetches the user instance by id.
 
