@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "shield"
-  s.version = "2.0.0.rc1"
+  s.version = "2.0.0"
   s.summary = %{Generic authentication protocol for rack applications.}
   s.description = %Q{
     Provides all the protocol you need in order to do authentication on
@@ -21,9 +21,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "armor"
   s.add_development_dependency "cutest"
-  s.add_development_dependency "cuba"
-  s.add_development_dependency "sinatra"
   s.add_development_dependency "rack-test"
-  s.add_development_dependency "sequel"
-  s.add_development_dependency "ohm", "~> 0.1"
 end
