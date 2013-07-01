@@ -87,7 +87,9 @@ test "logout" do |context|
 end
 
 test "authenticate" do |context|
+  context.session["no_fixation"] = 1
   context.authenticate(User[1001])
 
   assert User[1] == context.authenticated(User)
+  assert nil == context.session["no_fixation"]
 end
