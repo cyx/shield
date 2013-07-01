@@ -46,6 +46,7 @@ module Shield
     end
 
     def authenticate(user)
+      session.clear
       session[user.class.to_s] = user.id
     end
 
