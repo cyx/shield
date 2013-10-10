@@ -54,7 +54,7 @@ module Shield
       authenticate(user) if user
     end
 
-    def remember(user, expire = 1209600)
+    def remember(expire = 1209600)
       session[:remember_for] = expire
     end
 
