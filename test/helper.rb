@@ -11,7 +11,7 @@ class Cutest::Scope
     unless last_response.status == 302
       flunk
     end
-    assert_equal path, URI(last_response.headers["Location"]).path
+    assert_equal path, URI(redirection_url).path
   end
 
   def redirection_url
