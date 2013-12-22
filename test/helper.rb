@@ -2,7 +2,7 @@ require "cutest"
 require "rack/test"
 require "cuba"
 
-require File.expand_path("../lib/shield", File.dirname(__FILE__))
+require_relative "../lib/shield"
 
 class Cutest::Scope
   include Rack::Test::Methods
