@@ -1,6 +1,5 @@
 require "cutest"
 require "rack/test"
-require "cuba"
 
 require_relative "../lib/shield"
 

@@ -1,5 +1,6 @@
 require_relative "helper"
 require_relative "user"
+require "cuba"
 
 Cuba.use Rack::Session::Cookie, secret: "foo"
 Cuba.plugin Shield::Helpers
