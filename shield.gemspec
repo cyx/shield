@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors = ["Michel Martens", "Damian Janowski", "Cyril David"]
   s.email = ["michel@soveran.com", "djanowski@dimaion.com", "me@cyrildavid.com"]
   s.homepage = "http://github.com/cyx/shield"
+  s.license = "MIT"
 
   s.files = Dir[
     "README*",
