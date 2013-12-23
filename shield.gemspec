@@ -14,9 +14,9 @@ Gem::Specification.new do |s|
   s.files = Dir[
     "README*",
     "LICENSE",
-    "Rakefile",
     "lib/**/*.rb",
-    "test/**/*.rb"
+    "test/**/*.rb",
+    "*.gemspec"
   ]
 
   s.add_dependency "armor"
