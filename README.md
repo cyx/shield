@@ -1,27 +1,32 @@
-# Shield
+Shield
+======
 
 Shield
 
 _n. A solid piece of metal code used to protect your application._
 
-## Why another authentication library?
+Why another authentication library?
+-----------------------------------
 
 1. Because most of the other libraries are too huge.
 2. Extending other libraries is a pain.
-3. Writing code is fun :-)
+3. Writing code is fun :-).
 
-## What shield is
+What shield is
+--------------
 
-1. Simple (~ 110 lines of Ruby code)
-2. Doesn't get in the way
-3. Treats you like a grown up
+1. Simple (~ 110 lines of Ruby code).
+2. Doesn't get in the way.
+3. Treats you like a grown up.
 
-## What shield is not
+What shield is not
+------------------
 
 - is _not_ a ready-made end-to-end authentication solution.
 - is _not_ biased towards any kind of ORM.
 
-## Understanding Shield in 15 minutes
+Understanding Shield in 15 minutes
+----------------------------------
 
 ### Shield::Model
 
@@ -82,14 +87,8 @@ Shield uses [Armor][armor] for encrypting passwords. Armor is a pure ruby
 implementation of [PBKDF2][pbkdf2], a password-based key derivation function
 recommended for the protection of electronically-stored data.
 
-Shield also includes tests for [ohm][ohm] and [sequel][sequel] and makes sure
-that each release works with the latest respective versions.
-
-Take a look at [test/ohm.rb][ohm-test] and [test/sequel.rb][sequel-test]
-to learn more.
-
-To make Shield work with other ORMs (such as DataMapper), make sure to implement
-an `.[]` method which fetches the user instance by id.
+To make Shield work with any ORM, make sure that an `.[]` method which
+fetches the user instance by id is implemented.
 
 [armor]: https://github.com/cyx/armor
 [pbkdf2]: http://en.wikipedia.org/wiki/PBKDF2
@@ -113,14 +112,14 @@ in using either username or email, then you can simply extend `User.fetch`
 a bit by doing:
 
 ```ruby
-# in Sequel
+# in Sequel (http://sequel.rubyforge.org)
 class User < Sequel::Model
   def self.fetch(identifier)
     filter(email: identifier).first || filter(username: identifier).first
   end
 end
 
-# in Ohm
+# in Ohm (http://ohm.keyvalue.org)
 class User < Ohm::Model
   attribute :email
   attribute :username
@@ -136,12 +135,6 @@ end
 
 If you want to allow case-insensitive logins for some reason, you can
 simply normalize the values to their lowercase form.
-
-[ohm]: http://ohm.keyvalue.org
-[sequel]: http://sequel.rubyforge.org
-
-[ohm-test]: https://github.com/cyx/shield/blob/master/test/ohm.rb
-[sequel-test]: https://github.com/cyx/shield/blob/master/test/sequel.rb
 
 ### Shield::Helpers
 
