@@ -1,2 +1,4 @@
+.PHONY: test
+
 test:
-	RUBYLIB=./lib cutest -r ./tests/helper tests/*_test.rb
+	cutest -r ./test/helper test/*.rb

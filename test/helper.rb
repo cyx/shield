@@ -1,8 +1,7 @@
 require "cutest"
 require "rack/test"
-require "cuba"
 
-require File.expand_path("../lib/shield", File.dirname(__FILE__))
+require_relative "../lib/shield"
 
 class Cutest::Scope
   include Rack::Test::Methods
@@ -11,7 +10,7 @@ class Cutest::Scope
     unless last_response.status == 302
       flunk
     end
-    assert_equal path, URI(last_response.headers["Location"]).path
+    assert_equal path, URI(redirection_url).path
   end
 
   def redirection_url
