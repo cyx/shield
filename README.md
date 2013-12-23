@@ -1,27 +1,32 @@
-# Shield
+Shield
+======
 
 Shield
 
 _n. A solid piece of metal code used to protect your application._
 
-## Why another authentication library?
+Why another authentication library?
+-----------------------------------
 
 1. Because most of the other libraries are too huge.
 2. Extending other libraries is a pain.
-3. Writing code is fun :-)
+3. Writing code is fun :-).
 
-## What shield is
+What shield is
+--------------
 
-1. Simple (~ 110 lines of Ruby code)
-2. Doesn't get in the way
-3. Treats you like a grown up
+1. Simple (~ 110 lines of Ruby code).
+2. Doesn't get in the way.
+3. Treats you like a grown up.
 
-## What shield is not
+What shield is not
+------------------
 
 - is _not_ a ready-made end-to-end authentication solution.
 - is _not_ biased towards any kind of ORM.
 
-## Understanding Shield in 15 minutes
+Understanding Shield in 15 minutes
+----------------------------------
 
 ### Shield::Model
 
