@@ -12,13 +12,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/cyx/shield"
   s.license = "MIT"
 
-  s.files = Dir[
-    "README*",
-    "LICENSE",
-    "lib/**/*.rb",
-    "test/**/*.rb",
-    "*.gemspec"
-  ]
+  s.files = `git ls-files`.split("\n")
 
   s.add_dependency "armor"
   s.add_development_dependency "cutest"
