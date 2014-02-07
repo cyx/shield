@@ -149,8 +149,7 @@ but this time it aids you in the context of your Rack application.
    was passed in Rack.
 
 **Note:** As of this writing, Sinatra, Cuba & Rails adhere to having an `env`
-method in the handler / controller context. Shield also ships with tests for
-both Cuba and Sinatra.
+method in the handler / controller context. Shield ships with tests for Cuba.
 
 ```ruby
 require "sinatra"
