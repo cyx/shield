@@ -99,7 +99,7 @@ class User
 
   # ...
 
-  self.[](id)
+  def self.[](id)
     get id
   end
 end
