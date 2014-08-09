@@ -114,6 +114,8 @@ a bit by doing:
 ```ruby
 # in Sequel (http://sequel.rubyforge.org)
 class User < Sequel::Model
+  include Shield::Model
+
   def self.fetch(identifier)
     filter(email: identifier).first || filter(username: identifier).first
   end
@@ -121,6 +123,8 @@ end
 
 # in Ohm (http://ohm.keyvalue.org)
 class User < Ohm::Model
+  include Shield::Model
+
   attribute :email
   attribute :username
 
