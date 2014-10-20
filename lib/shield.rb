@@ -98,17 +98,33 @@ module Shield
   end
 
   module Password
+    Error = Class.new(StandardError)
+
+    # == DOS attack fix
+    #
+    # Excessively long passwords (e.g. 1MB strings) would hang
+    # a server.
+    #
+    # @see: https://www.djangoproject.com/weblog/2013/sep/15/security/
+    MAX_LEN = 4096
+
     def self.encrypt(password, salt = generate_salt)
-      Armor.digest(password, salt) + salt
+      digest(password, salt) + salt
     end
 
     def self.check(password, encrypted)
       sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
 
-      Armor.compare(Armor.digest(password, salt), sha512)
+      Armor.compare(digest(password, salt), sha512)
     end
 
   protected
+    def self.digest(password, salt)
+      raise Error if password.length > MAX_LEN
+
+      Armor.digest(password, salt)
+    end
+
     def self.generate_salt
       Armor.hex(OpenSSL::Random.random_bytes(32))
     end
