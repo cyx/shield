@@ -3,7 +3,7 @@ require_relative "user"
 require "cuba"
 
 Cuba.use Rack::Session::Cookie, secret: "foo"
-Cuba.use Shield::Middleware
+Cuba.use Shield::Middleware, lambda { |env| env["SCRIPT_NAME"] + "/login" } 
 
 Cuba.plugin Shield::Helpers
 
@@ -22,17 +22,9 @@ Cuba.define do
 end
 
 test do
-  env = { "PATH_INFO" => "/secured", "SCRIPT_NAME" => "" }
+  env = { "PATH_INFO" => "/secured", "SCRIPT_NAME" => "/lambda" }
   status, headers, body = Cuba.call(env)
 
   assert_equal 302, status
-  assert_equal "/login?return=%2Fsecured", headers["Location"]
-end
-
-test do
-  env = { "PATH_INFO" => "/secured", "SCRIPT_NAME" => "/suburi" }
-  status, headers, body = Cuba.call(env)
-
-  assert_equal 302, status
-  assert_equal "/suburi/login?return=%2Fsuburi%2Fsecured", headers["Location"]
+  assert_equal "/lambda/login?return=%2Flambda%2Fsecured", headers["Location"]
 end

@@ -3,8 +3,6 @@ require "uri"
 
 module Shield
   class Middleware
-    attr :url
-
     def initialize(app, url = "/login")
       @app = app
       @url = url
@@ -14,15 +12,23 @@ module Shield
       tuple = @app.call(env)
 
       if tuple[0] == 401
-        [302, headers(env["SCRIPT_NAME"] + env["PATH_INFO"]), []]
+        [302, headers(url(env), env["SCRIPT_NAME"] + env["PATH_INFO"]), []]
       else
         tuple
       end
     end
 
+    def url(env)
+      if @url.respond_to? :call
+        @url.call(env)
+      else
+        env["SCRIPT_NAME"] + @url
+      end
+    end
+
   private
-    def headers(path)
-      { "Location" => "%s?return=%s" % [url, encode(path)],
+    def headers(redirect_url, return_path)
+      { "Location" => "%s?return=%s" % [redirect_url, encode(return_path)],
         "Content-Type" => "text/html",
         "Content-Length" => "0"
       }
