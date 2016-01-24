@@ -1,8 +1,15 @@
+require "pry"
 require_relative "helper"
 
 scope do
-  test "encrypt" do
+  test "armor encryption" do
     encrypted = Shield::Password.encrypt("password")
+    assert Shield::Password.check("password", encrypted)
+  end
+
+  test "argon2 encryption" do
+    encrypted = Shield::Password.encrypt("password", mode: :argon2)
+    assert encrypted.include? 'argon2'
     assert Shield::Password.check("password", encrypted)
   end
 
