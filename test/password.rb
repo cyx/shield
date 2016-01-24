@@ -1,3 +1,4 @@
+require "pry"
 require_relative "helper"
 
 scope do
