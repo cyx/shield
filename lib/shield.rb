@@ -111,7 +111,7 @@ module Shield
     # @see: https://www.djangoproject.com/weblog/2013/sep/15/security/
     MAX_LEN = 4096
 
-    def self.encrypt(password, salt = generate_salt, mode: :armor)
+    def self.encrypt(password, salt = generate_salt, mode: :argon2)
       @encryption_mode = mode
 
       case @encryption_mode
