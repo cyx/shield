@@ -1,4 +1,5 @@
 require "armor"
+require "argon2"
 require "uri"
 
 module Shield
@@ -98,6 +99,8 @@ module Shield
   end
 
   module Password
+    attr_reader :encryption_mode
+
     Error = Class.new(StandardError)
 
     # == DOS attack fix
@@ -108,18 +111,29 @@ module Shield
     # @see: https://www.djangoproject.com/weblog/2013/sep/15/security/
     MAX_LEN = 4096
 
-    def self.encrypt(password, salt = generate_salt)
-      digest(password, salt) + salt
+    def self.encrypt(password, salt = generate_salt, mode: :argon2)
+      @encryption_mode = mode
+
+      case @encryption_mode
+      when :armor   then digest_with_armor(password, salt) + salt
+      when :argon2  then digest_with_argon2(password)
+      end
     end
 
     def self.check(password, encrypted)
-      sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
-
-      Armor.compare(digest(password, salt), sha512)
+      case @encryption_mode
+      when :armor
+        sha512, salt = encrypted.to_s[0...128], encrypted.to_s[128..-1]
+        Armor.compare(digest_with_armor(password, salt), sha512)
+      when :argon2
+        Argon2::Password.verify_password(password, encrypted)
+      else
+        raise Error, ":armor and :argon2 are the only supported encryption methods at this time."
+      end
     end
 
   protected
-    def self.digest(password, salt)
+    def self.digest_with_armor(password, salt)
       raise Error if password.length > MAX_LEN
 
       Armor.digest(password, salt)
@@ -127,6 +141,10 @@ module Shield
 
     def self.generate_salt
       Armor.hex(OpenSSL::Random.random_bytes(32))
+    end
+
+    def self.digest_with_argon2(password)
+      Argon2::Password.hash(password)
     end
   end
 end
