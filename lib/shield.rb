@@ -93,8 +93,8 @@ module Shield
       end
     end
 
-    def password=(password, mode: :argon2)
-      self.crypted_password = Shield::Password.encrypt(password.to_s, mode)
+    def password=(password, mode: :armor)
+      self.crypted_password = Shield::Password.encrypt(password.to_s, mode: mode)
     end
   end
 
