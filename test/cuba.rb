@@ -2,7 +2,7 @@ require_relative "helper"
 require_relative "user"
 require "cuba"
 
-Cuba.use Rack::Session::Cookie, secret: "foo"
+Cuba.use Rack::Session::Cookie, secret: "R6zSBQWz0VGVSwvT8THurhJwaVqzpnsH27J5FoI58pxoIciDQYvE4opVvDTLMyfjj7c5inIc6PDNaQWvArMvK3"
 Cuba.use Shield::Middleware
 Cuba.plugin Shield::Helpers
 
@@ -25,8 +25,8 @@ Cuba.define do
 
   on post, "login", param("login"), param("password") do |u, p|
     if login(User, u, p)
-      remember if req[:remember_me]
-      res.redirect(req[:return] || "/")
+      remember if req.params["remember_me"]
+      res.redirect(req.params["return"] || "/")
     else
       res.redirect "/login"
     end
@@ -82,10 +82,10 @@ scope do
   test "remember functionality" do
     post "/login", :login => "quentin", :password => "password", :remember_me => "1"
 
-    assert_equal session[:remember_for], 86400 * 14
+    assert_equal session["remember_for"], 86400 * 14
 
     get "/logout"
 
-    assert_equal nil, session[:remember_for]
+    assert_equal nil, session["remember_for"]
   end
 end

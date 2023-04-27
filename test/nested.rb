@@ -2,7 +2,7 @@ require_relative "helper"
 require_relative "user"
 require "cuba"
 
-Cuba.use Rack::Session::Cookie, secret: "foo"
+Cuba.use Rack::Session::Cookie, secret: "R6zSBQWz0VGVSwvT8THurhJwaVqzpnsH27J5FoI58pxoIciDQYvE4opVvDTLMyfjj7c5inIc6PDNaQWvArMvK3"
 Cuba.plugin Shield::Helpers
 
 class Admin < Cuba
