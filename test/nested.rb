@@ -6,7 +6,7 @@ Cuba.use Rack::Session::Cookie, secret: "R6zSBQWz0VGVSwvT8THurhJwaVqzpnsH27J5FoI
 Cuba.plugin Shield::Helpers
 
 class Admin < Cuba
-  use Shield::Middleware, "/admin/login"
+  use Shield::Middleware, "/login"
 
   define do
     on "login" do

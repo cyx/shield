@@ -28,3 +28,11 @@ test do
   assert_equal 302, status
   assert_equal "/login?return=%2Fsecured", headers["Location"]
 end
+
+test do
+  env = { "PATH_INFO" => "/secured", "SCRIPT_NAME" => "/suburi" }
+  status, headers, body = Cuba.call(env)
+
+  assert_equal 302, status
+  assert_equal "/suburi/login?return=%2Fsuburi%2Fsecured", headers["Location"]
+end
